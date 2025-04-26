@@ -3,23 +3,27 @@
 :root {
    --bg: #cfcfcf;
    --text: #212121;
+   --component-bg: #a3a3a3;
 }
 
 @media (prefers-color-scheme: dark) {
    :root {
       --bg: #212121;
-      --text: #cfcfcf
+      --text: #cfcfcf;
+      --component-bg: #363636;
    }
 }
 
-html { color-scheme: dark light ;}
+html {
+   color-scheme: dark light;
+}
 
 body {
    margin: 0px;
    padding: 10px 0;
    font-family: "Poppins", sans-serif;
    font-weight: 300;
-   background-color:var(--bg);
+   background-color: var(--bg);
    color: var(--text);
    display: flex;
    align-items: center;
@@ -36,23 +40,39 @@ body {
    text-align: center;
 }
 
-._advance {
+#_checked {
    padding-top: 10px;
    display: flex;
    justify-content: left;
+}
+
+form {
+   padding-bottom: 30px;
 }
 
 #_link {
    width: 300px;
    height: 30px;
    border-radius: 5px;
-   border-color: white;
+   border-color: var(--bg);
 }
 
-#_link::placeholder {
+#_videos {
+   width: 70px;
+   height: 15px;
+}
+
+#_link:placeholder {
    padding-left: 20px;
 }
 
-#_link:focus {
-   background-color: red;
+.result {
+   background-color: var(--component-bg);
+   border-radius: 10px 10px 0px 0px;
+   width: 300px;
+   height: 500px;
+}
+.result img {
+   padding-top: 20px;
+   border-radius: 5px;
 }
