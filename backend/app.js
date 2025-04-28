@@ -1,15 +1,14 @@
 const express = require('express');
 const app = express();
 require("dotenv").config();
+const cors = require('cors')
 const PORT = process.env.PORT
 const KEY = process.env.API_KEY
 const URL1 = process.env.URL1
 const URL2 = process.env.URL2
 const URL3 = process.env.URL3
 
-app.get('/', (req, res) => {
-   res.send('Hello World');
-})
+app.use(cors());
 
 function parseDuration(duration) {
    let hours = 0;
@@ -28,61 +27,6 @@ function parseDuration(duration) {
    return { hours, minutes, seconds };
 }
 
-
-/* {
-  "kind": "youtube#playlistListResponse",
-  "etag": "-a09FO8Ta97-AQgXVWPTkSllDP8",
-  "pageInfo": {
-    "totalResults": 1,
-    "resultsPerPage": 5
-  },
-  "items": [
-    {
-      "kind": "youtube#playlist",
-      "etag": "Ak5ShI3-h5u0kjY83g7mtE96ERY",
-      "id": "PLcv7FXWtUJQWXJZ2Y3VwWzuBQO75BJJ6N",
-      "snippet": {
-        "publishedAt": "2019-02-17T18:03:01.505684Z",
-        "channelId": "UCrrj59whpKzhk49xL_aTVQw",
-        "title": "Master Series - Mastering Discord - Explained in Hindi.",
-        "description": "",
-        "thumbnails": {
-          "default": {
-            "url": "https://i.ytimg.com/vi/ki933OnvXIg/default.jpg",
-            "width": 120,
-            "height": 90
-          },
-          "medium": {
-            "url": "https://i.ytimg.com/vi/ki933OnvXIg/mqdefault.jpg",
-            "width": 320,
-            "height": 180
-          },
-          "high": {
-            "url": "https://i.ytimg.com/vi/ki933OnvXIg/hqdefault.jpg",
-            "width": 480,
-            "height": 360
-          },
-          "standard": {
-            "url": "https://i.ytimg.com/vi/ki933OnvXIg/sddefault.jpg",
-            "width": 640,
-            "height": 480
-          },
-          "maxres": {
-            "url": "https://i.ytimg.com/vi/ki933OnvXIg/maxresdefault.jpg",
-            "width": 1280,
-            "height": 720
-          }
-        },
-        "channelTitle": "Technical GupShup",
-        "localized": {
-          "title": "Master Series - Mastering Discord - Explained in Hindi.",
-          "description": ""
-        }
-      }
-    }
-  ]
-} */
-
 app.get("/data", async (req, res) => {
    const response = { duration: { hours: 0, minutes: 0, seconds: 0 } }
    const playlistId = req.query.id
@@ -92,6 +36,7 @@ app.get("/data", async (req, res) => {
       const playlistData = await playlistDataResponse.json();
       response.playlistName = playlistData.items[0].snippet.title;
       response.channelName = playlistData.items[0].snippet.channelTitle;
+      response.thumbnail = playlistData.items[0].snippet.thumbnails.maxres.url;
 
       const playlistListResponse = await fetch(`${URL1}?key=${KEY}&part=contentDetails,snippet&maxResults=50&playlistId=${playlistId}&maxResults=50`);
       const playlistListData = await playlistListResponse.json();
