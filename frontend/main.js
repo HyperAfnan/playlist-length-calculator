@@ -7,34 +7,34 @@ checkbox.addEventListener("change", (e) => {
    checked.toggleAttribute("hidden")
 })
 
-// const link = document.getElementById("_link")
-// link.addEventListener("submit", (e) => {
-//    console.log(true)
-// })
-
-// const submit = document.getElementById("_submit")
-// submit.addEventListener("click", (e) =>  {
-//    e.preventDefault()
-//    if (result.getAttribute("hidden") === "true") {
-//       result.toggleAttribute("hidden")
-//    }
-// })
+function getPlaylistId(url) {
+   const listPosition = url.search("list=");
+   if (listPosition === -1) null;
+   const idStart = listPosition + 5;
+   const nextAmpersand = url.indexOf("&", idStart);
+   const idEnd = nextAmpersand !== -1 ? nextAmpersand : url.length;
+   const playlistId = url.substring(idStart, idEnd);
+   return playlistId;
+}
 
 document.getElementById('_submit').addEventListener('click', async (e) => {
-   const link = document.querySelector('#_link').value;
-   console.log(link)
-   // const watched = document.getElementById('watchedVideosInput').value;
    e.preventDefault()
-   playlistId = "PLGjplNEQ1it8-0CmoljS5yeV-GlKSUEt0"
+   const link = document.querySelector('#_link').value;
+   const watched = document.querySelector('#_videos').value;
+   const playlistId = getPlaylistId(link)
+   var reqLink = `http://localhost:3000/data?id=${playlistId}`
+   if (watched) {
+      reqLink += `&watched=${watched}`
+   }
 
-   fetch(`http://localhost:3000/data?id=${playlistId}`)
-   .then(response => response.json())
-   .then(data => {
-      document.querySelector('._playlistTitle').innerText = data.playlistName;
-      document.querySelector('._thumbnail').setAttribute("src", data.thumbnail) 
-      document.querySelector('._total_videos').innerText = data.totalVideos;
-      document.querySelector('._length').innerText = `${data.duration.hours}h ${data.duration.minutes}m ${data.duration.seconds}s`;
-      result.toggleAttribute("hidden")
+   fetch(reqLink)
+      .then(response => response.json())
+      .then(data => {
+         document.querySelector('._playlistTitle').innerText = data.playlistName;
+         document.querySelector('._thumbnail').setAttribute("src", data.thumbnail)
+         document.querySelector('._total_videos').innerText = data.totalVideos;
+         document.querySelector('._length').innerText = `${data.duration.hours}h ${data.duration.minutes}m ${data.duration.seconds}s`;
+         result.toggleAttribute("hidden")
       })
-   .catch(e => console.log(`Error: ${e}`))
+      .catch(e => console.log(`Error: ${e}`))
 });
