@@ -18,7 +18,7 @@ function getPlaylistId(url) {
 }
 
 function averageTime(videos, hours, minutes, seconds) {
-   const averageHours = hours / videos
+   let averageHours = hours / videos
    let averageMin = minutes / videos
    let averageSec = seconds / videos
 
@@ -44,14 +44,13 @@ document.getElementById('_submit').addEventListener('click', async (e) => {
    const link = document.querySelector('#_link').value;
    const watched = document.querySelector('#_videos').value;
    const playlistId = getPlaylistId(link)
-   var reqLink = `http://localhost:3000/data?id=${playlistId}`
+   var reqLink = `http://192.168.58.190:3000/data?id=${playlistId}`
    if (watched) {
       reqLink += `&watched=${watched}`
    }
-
    fetch(reqLink)
       .then(response => response.json())
-      .then(data => {
+      .then(data => { 
          const average = averageTime(data.totalVideos, data.duration.hours, data.duration.minutes, data.duration.seconds)
          document.querySelector('._playlistTitle').innerText = data.playlistName;
          document.querySelector('._thumbnail').setAttribute("src", data.thumbnail)

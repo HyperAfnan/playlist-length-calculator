@@ -39,14 +39,19 @@ app.get("/data", async (req, res) => {
       response.thumbnail = playlistData.items[0].snippet.thumbnails.maxres.url;
 
       const playlistListResponse = await fetch(`${URL1}?key=${KEY}&part=contentDetails,snippet&maxResults=50&playlistId=${playlistId}&maxResults=50`);
-      const playlistListData = await playlistListResponse.json();
+      let  playlistListData = await playlistListResponse.json();
       response.totalVideos = playlistListData.pageInfo.totalResults;
+
+      if (playlistListData.nextPageToken) {
+         const playlistDataResponse2 = await fetch(`${URL1}?key=${KEY}&part=contentDetails,snippet&maxResults=50&playlistId=${playlistId}&maxResults=50&pageToken=${playlistListData.nextPageToken}`)
+         let  playlistListData2 = await playlistDataResponse2.json()
+         playlistListData.items = [...playlistListData.items, ...playlistListData2.items];
+      }
 
       const videoPromises = playlistListData.items.map(async (item) => {
          const videoId = item.contentDetails.videoId;
          const videoResponse = await fetch(`${URL2}?key=${KEY}&part=contentDetails&id=${videoId}`);
          const videoData = await videoResponse.json();
-
 
          if (videoData.items && videoData.items.length > 0) {
             return parseDuration(videoData.items[0].contentDetails.duration);
