@@ -58,7 +58,9 @@ document.getElementById('_submit').addEventListener('click', async (e) => {
          document.querySelector('._total_videos').innerText = data.totalVideos;
          document.querySelector('._length').innerText = `${data.duration.hours}h ${data.duration.minutes}m ${data.duration.seconds}s`;
          document.querySelector('._average').innerText = `${average.ahours}h ${average.amin}m ${average.asec}s`;
-         result.toggleAttribute("hidden")
+         if (result.hasAttribute("hidden")) {
+            result.removeAttribute("hidden")
+         } 
       })
       .catch(e => console.log(`Error: ${e}`))
 });
