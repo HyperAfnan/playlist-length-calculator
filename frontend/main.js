@@ -17,6 +17,28 @@ function getPlaylistId(url) {
    return playlistId;
 }
 
+function averageTime(videos, hours, minutes, seconds) {
+   const averageHours = hours / videos
+   let averageMin = minutes / videos
+   let averageSec = seconds / videos
+
+   if (averageHours != Math.floor(averageHours)) {
+      let diff = averageHours - Math.floor(averageHours)
+      averageHours -= diff
+      diff *= 60;
+      averageMin += diff
+   }
+
+   if (averageMin != Math.floor(averageMin)) {
+      let diff = averageMin - Math.floor(averageMin)
+      averageMin -= diff
+      diff *= 60;
+      averageSec += diff
+      averageSec = Math.floor(averageSec)
+   }
+   return { ahours: averageHours, amin: averageMin, asec: averageSec }
+}
+
 document.getElementById('_submit').addEventListener('click', async (e) => {
    e.preventDefault()
    const link = document.querySelector('#_link').value;
@@ -30,10 +52,12 @@ document.getElementById('_submit').addEventListener('click', async (e) => {
    fetch(reqLink)
       .then(response => response.json())
       .then(data => {
+         const average = averageTime(data.totalVideos, data.duration.hours, data.duration.minutes, data.duration.seconds)
          document.querySelector('._playlistTitle').innerText = data.playlistName;
          document.querySelector('._thumbnail').setAttribute("src", data.thumbnail)
          document.querySelector('._total_videos').innerText = data.totalVideos;
          document.querySelector('._length').innerText = `${data.duration.hours}h ${data.duration.minutes}m ${data.duration.seconds}s`;
+         document.querySelector('._average').innerText = `${average.ahours}h ${average.amin}m ${average.asec}s`;
          result.toggleAttribute("hidden")
       })
       .catch(e => console.log(`Error: ${e}`))
