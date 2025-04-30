@@ -36,11 +36,14 @@ app.get("/data", async (req, res) => {
       const playlistData = await playlistDataResponse.json();
       response.playlistName = playlistData.items[0].snippet.title;
       response.channelName = playlistData.items[0].snippet.channelTitle;
-      response.thumbnail = playlistData.items[0].snippet.thumbnails.maxres.url;
+      response.thumbnail = playlistData.items[0].snippet.thumbnails.standard.url;
 
       const playlistListResponse = await fetch(`${URL1}?key=${KEY}&part=contentDetails,snippet&maxResults=50&playlistId=${playlistId}&maxResults=50`);
       let  playlistListData = await playlistListResponse.json();
       response.totalVideos = playlistListData.pageInfo.totalResults;
+      if (watched) {
+         response.videosLeft = playlistListData.pageInfo.totalResults - watched;
+      }
 
       if (playlistListData.nextPageToken) {
          const playlistDataResponse2 = await fetch(`${URL1}?key=${KEY}&part=contentDetails,snippet&maxResults=50&playlistId=${playlistId}&maxResults=50&pageToken=${playlistListData.nextPageToken}`)
