@@ -31,6 +31,10 @@ app.get("/data", async (req, res) => {
    const response = { duration: { hours: 0, minutes: 0, seconds: 0 } }
    const playlistId = req.query.id
    const watched = req.query.watched
+
+   if (!playlistId) res.status(400).json({ error: 'Playlist ID is required' });
+   if (watched && isNaN(watched)) res.status(400).json({ error: 'watched must be a number' });
+
    try {
       const playlistDataResponse = await fetch(`${URL3}?key=${KEY}&part=snippet&id=${playlistId}`);
       const playlistData = await playlistDataResponse.json();
@@ -41,9 +45,7 @@ app.get("/data", async (req, res) => {
       const playlistListResponse = await fetch(`${URL1}?key=${KEY}&part=contentDetails,snippet&maxResults=50&playlistId=${playlistId}&maxResults=50`);
       let  playlistListData = await playlistListResponse.json();
       response.totalVideos = playlistListData.pageInfo.totalResults;
-      if (watched) {
-         response.videosLeft = playlistListData.pageInfo.totalResults - watched;
-      }
+      if (watched) response.videosLeft = playlistListData.pageInfo.totalResults - watched;
 
       if (playlistListData.nextPageToken) {
          const playlistDataResponse2 = await fetch(`${URL1}?key=${KEY}&part=contentDetails,snippet&maxResults=50&playlistId=${playlistId}&maxResults=50&pageToken=${playlistListData.nextPageToken}`)
@@ -56,22 +58,16 @@ app.get("/data", async (req, res) => {
          const videoResponse = await fetch(`${URL2}?key=${KEY}&part=contentDetails&id=${videoId}`);
          const videoData = await videoResponse.json();
 
-         if (videoData.items && videoData.items.length > 0) {
-            return parseDuration(videoData.items[0].contentDetails.duration);
-         }
+         if (videoData.items && videoData.items.length > 0) return parseDuration(videoData.items[0].contentDetails.duration)
          return response.duration = { hours: 0, minutes: 0, seconds: 0 };
 
       });
 
       const videoDurations = await Promise.all(videoPromises);
-      if (watched != undefined) {
-         videoDurations.splice(0, watched)
-      }
+      if (watched != undefined) videoDurations.splice(0, watched)
 
       let totalSeconds = 0;
-      videoDurations.forEach(vid => {
-         totalSeconds += (vid.hours * 3600) + (vid.minutes * 60) + vid.seconds;
-      });
+      videoDurations.forEach(vid => totalSeconds += (vid.hours * 3600) + (vid.minutes * 60) + vid.seconds);
 
       response.duration.hours = Math.floor(totalSeconds / 3600);
       response.duration.minutes = Math.floor((totalSeconds % 3600) / 60);
