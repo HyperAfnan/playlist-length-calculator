@@ -28,7 +28,7 @@ function parseDuration(duration) {
 }
 
 app.get("/api/data", async (req, res) => {
-   const response = { duration: { hours: 0, minutes: 0, seconds: 0 } }
+   const response = { duration: { days: 0, hours: 0, minutes: 0, seconds: 0 } }
    const playlistId = req.query.id
    const watched = req.query.watched
 
@@ -77,7 +77,8 @@ app.get("/api/data", async (req, res) => {
       let totalSeconds = 0;
       videoDurations.forEach(vid => totalSeconds += (vid.hours * 3600) + (vid.minutes * 60) + vid.seconds);
 
-      response.duration.hours = Math.floor(totalSeconds / 3600);
+      response.duration.days = Math.floor(totalSeconds / (3600 * 24));
+      response.duration.hours = Math.floor(totalSeconds / 3600 % 24) ;
       response.duration.minutes = Math.floor((totalSeconds % 3600) / 60);
       response.duration.seconds = totalSeconds % 60;
 

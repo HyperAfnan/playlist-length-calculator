@@ -17,10 +17,18 @@ function getPlaylistId(url) {
    return playlistId;
 }
 
-function averageTime(videos, hours, minutes, seconds) {
+function averageTime(videos, days, hours, minutes, seconds) {
+   let averageDays = days / videos
    let averageHours = hours / videos
    let averageMin = minutes / videos
    let averageSec = seconds / videos
+
+   if (averageDays != Math.floor(averageDays)) {
+      let diff = averageDays - Math.floor(averageDays)
+      averageDays -= diff
+      diff *= 24;
+      averageHours += diff
+   }
 
    if (averageHours != Math.floor(averageHours)) {
       let diff = averageHours - Math.floor(averageHours)
@@ -36,7 +44,7 @@ function averageTime(videos, hours, minutes, seconds) {
       averageSec += diff
       averageSec = Math.floor(averageSec)
    }
-   return { ahours: averageHours, amin: averageMin, asec: averageSec }
+   return { adays: averageDays, ahours: averageHours, amin: averageMin, asec: averageSec }
 }
 
 document.getElementById('_submit').addEventListener('click', async (e) => {
@@ -67,10 +75,10 @@ document.getElementById('_submit').addEventListener('click', async (e) => {
          document.querySelector('._videos_left_value').innerText = data.videosLeft;
          document.querySelector('._thumbnail').setAttribute("src", data.thumbnail)
          document.querySelector('._total_videos').innerText = data.totalVideos;
-         document.querySelector('._length').innerText = `${data.duration.hours}h ${data.duration.minutes}m ${data.duration.seconds}s`;
-         document.querySelector('._average').innerText = `${average.ahours}h ${average.amin}m ${average.asec}s`;
          if (result.hasAttribute("hidden")) {
             result.removeAttribute("hidden")
+         document.querySelector('._length').innerText = `${data.duration.days}d ${data.duration.hours}h ${data.duration.minutes}m ${data.duration.seconds}s`;
+         document.querySelector('._average').innerText = `${average.adays}d ${average.ahours}h ${average.amin}m ${average.asec}s`;
          }
       })
       .catch(e => console.log(`Error: ${e}`))
