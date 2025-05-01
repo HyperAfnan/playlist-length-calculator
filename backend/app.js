@@ -42,18 +42,26 @@ app.get("/data", async (req, res) => {
       response.channelName = playlistData.items[0].snippet.channelTitle;
       response.thumbnail = playlistData.items[0].snippet.thumbnails.standard.url;
 
-      const playlistListResponse = await fetch(`${URL1}?key=${KEY}&part=contentDetails,snippet&maxResults=50&playlistId=${playlistId}&maxResults=50`);
-      let  playlistListData = await playlistListResponse.json();
-      response.totalVideos = playlistListData.pageInfo.totalResults;
-      if (watched) response.videosLeft = playlistListData.pageInfo.totalResults - watched;
+      let playlistListData = []
+      let nextPageToken = null
 
-      if (playlistListData.nextPageToken) {
-         const playlistDataResponse2 = await fetch(`${URL1}?key=${KEY}&part=contentDetails,snippet&maxResults=50&playlistId=${playlistId}&maxResults=50&pageToken=${playlistListData.nextPageToken}`)
-         let  playlistListData2 = await playlistDataResponse2.json()
-         playlistListData.items = [...playlistListData.items, ...playlistListData2.items];
-      }
+      do {
+         await fetch(`${URL1}?key=${KEY}&part=contentDetails,snippet&playlistId=${playlistId}&maxResults=50${nextPageToken ? `&pageToken=${nextPageToken}` : ""}`)
+            .then(respo => respo.json())
+            .then(data => {
+               if (!nextPageToken) {
+                  playlistListData = data
+                  response.totalVideos = playlistListData.pageInfo.totalResults;
+                  if (watched) response.videosLeft = playlistListData.pageInfo.totalResults - watched;
+               } else {
+                  playlistListData.items = [...playlistListData.items, ...data.items]
+                  if (playlistListData.items.length === response.totalVideos) nextPageToken = null
+               }
+               nextPageToken = data.nextPageToken;
+            })
+      } while (nextPageToken != null);
 
-      const videoPromises = playlistListData.items.map(async (item) => {
+      const videoPromises = await playlistListData.items.map(async (item) => {
          const videoId = item.contentDetails.videoId;
          const videoResponse = await fetch(`${URL2}?key=${KEY}&part=contentDetails&id=${videoId}`);
          const videoData = await videoResponse.json();
