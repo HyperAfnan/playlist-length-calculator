@@ -47,7 +47,7 @@ document.getElementById('_submit').addEventListener('click', async (e) => {
    const videosLeft = document.querySelector("._videos_left")
    const videosLeftValue = document.querySelector('._videos_left_value')
    const playlistId = getPlaylistId(link)
-   var reqLink = `http://192.168.58.190:3000/data?id=${playlistId}`
+   var reqLink = `/api/data?id=${playlistId}`
 
    if (link === "" || link === null || link === undefined || link === " " || !isNaN(link) || !link.includes("list=")) alert("Please enter a valid link")
 

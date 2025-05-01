@@ -1,0 +1,2 @@
+GET http://localhost:3000/data?id=PLr1ypW0YWS45DBNwDXwbmv7FxchTJiOQa
+Accept: application/json

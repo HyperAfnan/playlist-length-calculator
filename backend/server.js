@@ -1,14 +1,14 @@
 const express = require('express');
 const app = express();
 require("dotenv").config();
-const cors = require('cors')
-const PORT = process.env.PORT
+const PORT = process.env.PORT || 5000
 const KEY = process.env.API_KEY
 const URL1 = process.env.URL1
 const URL2 = process.env.URL2
 const URL3 = process.env.URL3
+const path = require('path');
 
-app.use(cors());
+app.use(express.static(path.join(__dirname, "../frontend")))
 
 function parseDuration(duration) {
    let hours = 0;
@@ -27,7 +27,7 @@ function parseDuration(duration) {
    return { hours, minutes, seconds };
 }
 
-app.get("/data", async (req, res) => {
+app.get("/api/data", async (req, res) => {
    const response = { duration: { hours: 0, minutes: 0, seconds: 0 } }
    const playlistId = req.query.id
    const watched = req.query.watched
