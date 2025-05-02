@@ -1,11 +1,12 @@
 const express = require('express');
 const app = express();
+const rateLimit = require("express-rate-limit")
 require("dotenv").config();
 const PORT = process.env.PORT || 5000;
-const API_KEY = process.env.API_KEY;  
-const YOUTUBE_PLAYLIST_DATA = process.env.URL1;    
-const YOUTUBE_VIDEO_METADATA = process.env.URL2;    
-const YOUTUBE_PLAYLIST_METADATA = process.env.URL3;    
+const API_KEY = process.env.API_KEY;
+const YOUTUBE_PLAYLIST_DATA = process.env.URL1;
+const YOUTUBE_VIDEO_METADATA = process.env.URL2;
+const YOUTUBE_PLAYLIST_METADATA = process.env.URL3;
 const path = require('path');
 
 // Serve static files from the frontend directory
@@ -35,6 +36,21 @@ function parseDuration(duration) {
 
    return { hours, minutes, seconds };
 }
+
+/**
+ * Rate limiting middleware to prevent API abuse
+ * Limits to 50 requests per IP address in a 15-minute window
+ */
+const limiter = rateLimit({
+   windowMs: 15 * 60 * 1000,  
+   max: 50,  
+   standardHeaders: true,  
+   legacyHeaders: false,
+   message: { error: "Too many requests, rate limit exceeded" }
+})
+
+// Apply rate limiting to all routes
+app.use(limiter)
 
 /**
  * API endpoint to get playlist duration and information
@@ -103,7 +119,7 @@ app.get("/api/data", async (req, res) => {
 
       // Wait for all video duration requests to complete
       const videoDurations = await Promise.all(videoPromises);
-      
+
       // Remove already watched videos from calculation if specified
       if (watched != undefined) videoDurations.splice(0, watched);
 
