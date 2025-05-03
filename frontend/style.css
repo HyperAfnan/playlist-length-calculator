@@ -98,3 +98,47 @@ img {
 #_submit:hover {
    background-color: var(--accent-hover);
 }
+.notification {
+   background-color: var(--component-bg);
+   color: var(--text);
+   border: 0.0625rem solid var(--border);
+   border-radius: 0.5rem;
+   padding: 1rem 1rem 1rem 1rem;
+   position: absolute;
+   width: 18rem;
+}
+
+.notification.slideIn {
+   animation-duration: 1s;
+   animation-name: slideIn;
+}
+
+.notification.slideOut {
+   animation-duration: 1s;
+   animation-name: slideOut;
+}
+
+
+@keyframes slideIn {
+   from {
+      translate: -100% 0;
+      scale: 100% 1;
+   }
+
+   to {
+      translate: 0% 0;
+      scale: 100% 1;
+   }
+}
+
+@keyframes slideOut {
+   from {
+      translate: 0% 0;
+      scale: none;
+   }
+
+   to {
+      translate: -100% 0;
+      scale: none;
+   }
+}

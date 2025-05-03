@@ -1,12 +1,35 @@
 const checkbox = document.querySelector("input[type='checkbox']")
-const checked = document.querySelector("._checked")
-const result = document.querySelector(".result")
+const checked = document.querySelector(".checked")
+const result_card = document.querySelector(".resultCard")
 
 checkbox.addEventListener("change", (e) => {
    e.preventDefault()
    checked.toggleAttribute("hidden")
 })
 
+function sendNotification(message) {
+   const div = document.createElement("div")
+   const mainDiv = document.querySelector(".mainDiv")
+   div.className = "notification"
+   div.classList.add("slideIn")
+
+   if (document.querySelector(".notification")) return 0
+
+   const h1 = document.createElement("span")
+   h1.className = "notificationHeader"
+   h1.innerHTML = message
+
+   div.appendChild(h1)
+
+   mainDiv.appendChild(div)
+   setTimeout(() => {
+      div.classList.remove("slideIn")
+      div.classList.add("slideOut")
+      setTimeout(() => {
+         div.remove()
+      }, 1000);
+   }, 3000)
+}
 function getPlaylistId(url) {
    const listPosition = url.search("list=");
    if (listPosition === -1) null;
@@ -47,39 +70,51 @@ function averageTime(videos, days, hours, minutes, seconds) {
    return { adays: averageDays, ahours: averageHours, amin: averageMin, asec: averageSec }
 }
 
-document.getElementById('_submit').addEventListener('click', async (e) => {
+
+document.getElementById('submit').addEventListener('click', async (e) => {
    e.preventDefault()
 
-   const link = document.querySelector('#_link').value;
-   const watched = document.querySelector('#_videos').value;
-   const videosLeft = document.querySelector("._videos_left")
-   const videosLeftValue = document.querySelector('._videos_left_value')
+   const link = document.querySelector('#linkInput').value;
+   const watched = document.querySelector('#videos').value;
+   const videosLeft = document.querySelector(".videosLeft")
+   const videosLeftValue = document.querySelector('.videosLeftValue')
    const playlistId = getPlaylistId(link)
    var reqLink = `/api/data?id=${playlistId}`
+   var ok = true
 
-   if (link === "" || link === null || link === undefined || link === " " || !isNaN(link) || !link.includes("list=")) alert("Please enter a valid link")
+   if (link === "" || link === null || link === undefined || link === " " || !isNaN(link) || !link.includes("list=")) {
+      ok = false
+      return sendNotification("Please enter a valid link")
+   }
 
    if (watched) {
-      if (watched === "" || watched === null || watched === undefined || watched === " " || isNaN(watched)) alert("Please enter a valid number")
+      if (watched === "" || watched === null || watched === undefined || watched === " " || isNaN(watched)) {
+         ok = false
+         return sendNotification("Please enter a valid number")
+      }
       else {
          reqLink += `&watched=${watched}`
          videosLeft.removeAttribute("hidden")
          videosLeftValue.removeAttribute("hidden")
+         result_card.style.height = "36rem"
       }
    }
-   fetch(reqLink)
-      .then(response => response.json())
-      .then(data => {
-         const average = averageTime(data.totalVideos, data.duration.hours, data.duration.minutes, data.duration.seconds)
-         document.querySelector('._playlistTitle').innerText = data.playlistName;
-         document.querySelector('._videos_left_value').innerText = data.videosLeft;
-         document.querySelector('._thumbnail').setAttribute("src", data.thumbnail)
-         document.querySelector('._total_videos').innerText = data.totalVideos;
-         if (result.hasAttribute("hidden")) {
-            result.removeAttribute("hidden")
-         document.querySelector('._length').innerText = `${data.duration.days}d ${data.duration.hours}h ${data.duration.minutes}m ${data.duration.seconds}s`;
-         document.querySelector('._average').innerText = `${average.adays}d ${average.ahours}h ${average.amin}m ${average.asec}s`;
-         }
-      })
-      .catch(e => console.log(`Error: ${e}`))
+   if (ok) {
+      fetch(reqLink)
+         .then(response => { response.json() })
+         .then(data => {
+            if (data.error) { return sendNotification(data.error) }
+            const average = averageTime(data.totalVideos, data.duration.days, data.duration.hours, data.duration.minutes, data.duration.seconds)
+            document.querySelector('.playlistTitle').innerText = data.playlistName;
+            document.querySelector('.videosLeftValue').innerText = data.videosLeft;
+            document.querySelector('.thumbnail').setAttribute("src", data.thumbnail)
+            document.querySelector('.totalVideos').innerText = data.totalVideos;
+            document.querySelector('.length').innerText = `${data.duration.days}d ${data.duration.hours}h ${data.duration.minutes}m ${data.duration.seconds}s`;
+            document.querySelector('.average').innerText = `${average.adays}d ${average.ahours}h ${average.amin}m ${average.asec}s`;
+            if (result_card.hasAttribute("hidden")) {
+               result_card.removeAttribute("hidden")
+            }
+         })
+         .catch(e => console.log(`Error: ${e}`))
+   }
 });

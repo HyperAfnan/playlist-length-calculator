@@ -11,6 +11,17 @@ const path = require('path');
 
 // Serve static files from the frontend directory
 app.use(express.static(path.join(__dirname, "../frontend")));
+/**
+ * Rate limiting middleware to prevent API abuse
+ * Limits to 50 requests per IP address in a 15-minute window
+ */
+app.use(rateLimit({
+   windowMs: 15 * 60 * 1000,
+   max: 50,
+   standardHeaders: true,
+   legacyHeaders: false,
+   message: { error: "Too many requests, rate limit exceeded" }
+}))
 
 /**
  * Parses YouTube duration format (ISO 8601) into hours, minutes, and seconds
@@ -38,21 +49,6 @@ function parseDuration(duration) {
 }
 
 /**
- * Rate limiting middleware to prevent API abuse
- * Limits to 50 requests per IP address in a 15-minute window
- */
-const limiter = rateLimit({
-   windowMs: 15 * 60 * 1000,  
-   max: 50,  
-   standardHeaders: true,  
-   legacyHeaders: false,
-   message: { error: "Too many requests, rate limit exceeded" }
-})
-
-// Apply rate limiting to all routes
-app.use(limiter)
-
-/**
  * API endpoint to get playlist duration and information
  * @route GET /api/data
  * @query {string} id - YouTube playlist ID
@@ -76,14 +72,19 @@ app.get("/api/data", async (req, res) => {
       // Get playlist metadata (title, channel, thumbnail)
       const playlistMetadataResponse = await fetch(`${YOUTUBE_PLAYLIST_METADATA}?key=${API_KEY}&part=snippet&id=${playlistId}`);
       const playlistMetadata = await playlistMetadataResponse.json();
+
+      if (playlistMetadata.error.code === 403) { 
+         return res.status(403).json({ error: "Current Quota exceeded. Please try after some time" }) 
+      }
+
       response.playlistName = playlistMetadata.items[0].snippet.title;
       response.channelName = playlistMetadata.items[0].snippet.channelTitle;
       response.thumbnail = playlistMetadata.items[0].snippet.thumbnails.standard.url;
 
       // Fetch all playlist items (paginated)
-      /** @type {Object} */
+      // @type {Object} 
       let playlistData = [];
-      /** @type {string|null} */
+      // @type {string|null}
       let nextPageToken = null;
 
       // Handle pagination to get all videos in the playlist
