@@ -1,18 +1,18 @@
 {
   "dependencies": {
-    "body-parser": "^2.2.0",
-    "cors": "^2.8.5",
-    "dotenv": "^16.5.0",
-    "env": "^0.0.2",
-    "express": "^5.1.0"
+    "body-parser": "2.2.0",
+    "cors": "2.8.5",
+    "dotenv": "16.5.0",
+    "env": "0.0.2",
+    "express": "5.1.0",
+    "express-rate-limit": "7.5.0",
   },
   "name": "yt-playlist-calculator",
   "version": "1.0.0",
   "description": "A website to calculate youtube playlist length",
   "main": "index.js",
-  "devDependencies": {},
   "scripts": {
-      "start": "node --watch backend/server.js"
+    "start": "node --watch backend/server.js"
   },
   "repository": {
     "type": "git",
