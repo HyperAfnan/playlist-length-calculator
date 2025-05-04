@@ -9,35 +9,52 @@
     <script>eruda.init();</script>
   </head>
   <body>
-    <div class="_main_div">
-      <h1>YT Playlist Length Calculator</h1>
-      <p>YT playlist length calculator is a tool from which you can calculate the length of any youtube playlist with
-         an ease and can also track your progress with it by enering how many videos you have watched</p>
-      <form action="" autocomplete="off">
-        <input type="url" placeholder="Youtube video link" name="link" id="_link">
-        <div class="_advance">
-          <label for="_checkbox" id="_checkbox">
-            <input type="checkbox" name="checkbox" class="_checkbox" id="_checkbox">
-            Advance Option
-          </label>
-          <div class="_checked" hidden="true">
-            <label for="_videos">Watched Videos
-              <input type="text" name="_videos" id="_videos" placeholder="eg. 3"></label>
+    <div class="mainDiv">
+      <div class="info">
+        <h1>YT Playlist Length Calculator</h1>
+        <p>
+          YT playlist length calculator is a tool from which you can calculate the length of any youtube playlist with
+            an ease and can also track your progress with it by entering how many videos you have watched
+        </p>
+      </div>
+      <div class="form">
+        <form action="" autocomplete="off">
+          <input placeholder="Youtube video link" name="link" id="linkInput">
+          <div class="advance">
+            <label for="checkbox" id="checkbox">
+              <input type="checkbox" name="checkbox" class="checkbox" id="checkbox">
+              Advance Option
+            </label>
+            <div class="checked" hidden="true">
+              <label for="videos">
+                <span>Watched Videos</span>
+                <input name="videos" id="videos" placeholder="eg. 3">
+              </label>
+            </div>
           </div>
+          <input type="submit" value="Submit" id="submit">
+        </form>
+      </div>
+      <div class="result">
+        <div class="resultCard" hidden="true">
+          <img src="" class="thumbnail" alt="thumbnail" height="100px" width="200px">
+          <h3 class="playlistTitle"></h3>
+          <h4>Playlist Length</h4>
+          <span class="length"></span>
+          <h4>Total Videos</h4>
+          <span class="totalVideos"></span>
+          <h4 class="videosLeft" hidden>Videos Left</h4>
+          <span class="videosLeft videosLeftValue" hidden></span>
+          <h4>Average Video Length</h4>
+          <span class="average"></span>
         </div>
-        <input type="submit"  value="Submit" id="_submit">
-      </form>
-      <div class="result" hidden="true">
-        <img src="" class="_thumbnail" alt="thumbnail" height="100" width="200px">
-        <h3 class="_playlistTitle"></h3>
-        <h4>Playlist Length</h4>
-        <span class="_length"></span>
-        <h4>Total Videos</h4>
-        <span class="_total_videos"></span>
-        <h4  class="_videos_left" hidden>Videos Left</h4>
-        <span class="_videos_left _videos_left_value" hidden></span>
-        <h4>Average Video Length</h4>
-        <span class="_average"></span>
+      </div>
+      <div class="footer">
+        <div class="footerContent">
+          <p>&copy; 2025 YT Playlist Length Calculator. All rights reserved.</p>
+          <p>Created by Afnan
+            <span class="trademark">&trade;</span></p>
+        </div>
       </div>
     </div>
     <script src="./main.js">

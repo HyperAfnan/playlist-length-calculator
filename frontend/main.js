@@ -30,6 +30,7 @@ function sendNotification(message) {
       }, 1000);
    }, 3000)
 }
+
 function getPlaylistId(url) {
    const listPosition = url.search("list=");
    if (listPosition === -1) null;
@@ -40,6 +41,8 @@ function getPlaylistId(url) {
    return playlistId;
 }
 
+
+// BUG: secondsnot being calculated correctly
 function averageTime(videos, days, hours, minutes, seconds) {
    let averageDays = days / videos
    let averageHours = hours / videos
@@ -67,6 +70,11 @@ function averageTime(videos, days, hours, minutes, seconds) {
       averageSec += diff
       averageSec = Math.floor(averageSec)
    }
+
+   // if (averageSec != Math.floor(averageSec)) {
+   //    let diff = averageSec - Math.floor(averageSec)
+   // }
+
    return { adays: averageDays, ahours: averageHours, amin: averageMin, asec: averageSec }
 }
 
