@@ -11,6 +11,8 @@ const path = require('path');
 
 // Serve static files from the frontend directory
 app.use(express.static(path.join(__dirname, "../frontend")));
+
+app.use( "trust proxy", true);
 /**
  * Rate limiting middleware to prevent API abuse
  * Limits to 50 requests per IP address in a 15-minute window
