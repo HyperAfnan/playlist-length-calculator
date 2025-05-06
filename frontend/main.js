@@ -109,7 +109,7 @@ document.getElementById('submit').addEventListener('click', async (e) => {
    }
    if (ok) {
       fetch(reqLink)
-         .then(response => { response.json() })
+         .then(response => response.json())
          .then(data => {
             if (data.error) { return sendNotification(data.error) }
             const average = averageTime(data.totalVideos, data.duration.days, data.duration.hours, data.duration.minutes, data.duration.seconds)

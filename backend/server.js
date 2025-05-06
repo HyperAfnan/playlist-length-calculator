@@ -74,9 +74,9 @@ app.get("/api/data", async (req, res) => {
       const playlistMetadataResponse = await fetch(`${YOUTUBE_PLAYLIST_METADATA}?key=${API_KEY}&part=snippet&id=${playlistId}`);
       const playlistMetadata = await playlistMetadataResponse.json();
 
-      // if (playlistMetadata.error.code === 403) { 
-      //    return res.status(403).json({ error: "Current Quota exceeded. Please try after some time" }) 
-      // }
+      if (playlistMetadataResponse.status === 403) { 
+         return res.status(403).json({ error: "Current Quota exceeded. Please try after some time" }) 
+      }
 
       response.playlistName = playlistMetadata.items[0].snippet.title;
       response.channelName = playlistMetadata.items[0].snippet.channelTitle;
